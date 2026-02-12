@@ -17,9 +17,8 @@ func Load() (*Config, error) {
 	viper.SetConfigFile(".env")
 	viper.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err != nil {
-		return nil, err
-	}
+	// .env file is optional — in production, env vars are injected directly
+	_ = viper.ReadInConfig()
 
 	return &Config{
 		AppPort:     viper.GetString("APP_PORT"),
