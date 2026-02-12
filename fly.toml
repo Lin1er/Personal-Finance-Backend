@@ -1,15 +1,12 @@
-# fly.toml app configuration file generated for personal-finance-backend-broken-fire-1312 on 2026-02-12T07:39:43+07:00
+# fly.toml app configuration file generated for personal-finance-backend on 2026-02-12T00:56:25Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'personal-finance-backend-broken-fire-1312'
+app = 'personal-finance-backend'
 primary_region = 'sin'
 
 [build]
-
-[env]
-  PORT = '8080'
 
 [http_service]
   internal_port = 8080
@@ -20,7 +17,7 @@ primary_region = 'sin'
   processes = ['app']
 
 [[vm]]
-  memory = '256mb'
+  memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
-  memory_mb = 256
+  memory_mb = 1024
