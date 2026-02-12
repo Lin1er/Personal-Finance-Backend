@@ -1,15 +1,29 @@
-ARG GO_VERSION=1
-FROM golang:${GO_VERSION}-bookworm AS builder
+# syntax=docker/dockerfile:1
+
+# ---- builder ----
+FROM golang:1.25-bookworm AS builder
 
 WORKDIR /usr/src/app
+
+# copy module files first for cache
 COPY go.mod go.sum ./
-RUN go mod download && go mod verify
+RUN go mod download
+
+# copy source
 COPY . .
-RUN go build -v -o /run-app ./cmd/api
 
+# build static binary
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -trimpath -ldflags="-s -w" \
+    -o app ./cmd/api
 
-FROM debian:bookworm
+# ---- runtime ----
+FROM debian:bookworm-slim
 
-COPY --from=builder /run-app /usr/local/bin/
+WORKDIR /app
 
-CMD ["run-app"]
+COPY --from=builder /usr/src/app/app /app/app
+
+EXPOSE 8080
+
+CMD ["/app/app"]
