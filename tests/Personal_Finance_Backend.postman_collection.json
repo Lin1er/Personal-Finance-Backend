@@ -1,0 +1,483 @@
+{
+	"info": {
+		"_postman_id": "pf-backend-collection",
+		"name": "Personal Finance Backend",
+		"description": "API collection for Personal Finance Backend.\n\nVariables:\n- base_url: Server URL\n- admin_api_key: ADMIN_API_KEY from .env\n- api_key: API key created via /admin/v1/api-keys",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "admin_api_key",
+			"value": "6c7f4f36ee08e3b59dce4ca1990a17d1e6aa333241b5b2d807de585c58333700"
+		},
+		{
+			"key": "api_key",
+			"value": ""
+		},
+		{
+			"key": "api_key_id",
+			"value": ""
+		},
+		{
+			"key": "category_id",
+			"value": ""
+		},
+		{
+			"key": "transaction_id",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "Public",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin - API Key Management",
+			"item": [
+				{
+					"name": "Create API Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.data && jsonData.data.key) {",
+									"    pm.collectionVariables.set('api_key', jsonData.data.key);",
+									"    pm.collectionVariables.set('api_key_id', jsonData.data.id);",
+									"    console.log('API Key saved:', jsonData.data.key);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Admin-Key",
+								"value": "{{admin_api_key}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"my-frontend-app\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/v1/api-keys",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "v1", "api-keys"]
+						},
+						"description": "Create a new API key. The key is only shown once in the response. It will be auto-saved to the collection variable `api_key`."
+					}
+				},
+				{
+					"name": "List API Keys",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Admin-Key",
+								"value": "{{admin_api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/v1/api-keys",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "v1", "api-keys"]
+						}
+					}
+				},
+				{
+					"name": "Get API Key by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Admin-Key",
+								"value": "{{admin_api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/v1/api-keys/{{api_key_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "v1", "api-keys", "{{api_key_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update API Key",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Admin-Key",
+								"value": "{{admin_api_key}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"renamed-app\",\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/v1/api-keys/{{api_key_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "v1", "api-keys", "{{api_key_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Deactivate API Key",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Admin-Key",
+								"value": "{{admin_api_key}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"is_active\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/v1/api-keys/{{api_key_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "v1", "api-keys", "{{api_key_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete API Key",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Admin-Key",
+								"value": "{{admin_api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/v1/api-keys/{{api_key_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "v1", "api-keys", "{{api_key_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "API (Protected)",
+			"item": [
+				{
+					"name": "Ping",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/ping",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "ping"]
+						}
+					}
+				},
+				{
+					"name": "Ping (No Key - Should 401)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/ping",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "ping"]
+						},
+						"description": "This should return 401 Unauthorized because no API key is provided."
+					}
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Create Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.data && jsonData.data.id) {",
+									"    pm.collectionVariables.set('category_id', jsonData.data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "X-API-Key", "value": "{{api_key}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Jajan\",\n    \"type\": \"expense\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "categories"]
+						}
+					}
+				},
+				{
+					"name": "List Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "X-API-Key", "value": "{{api_key}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "categories"]
+						}
+					}
+				},
+				{
+					"name": "Get Category by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "X-API-Key", "value": "{{api_key}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories/{{category_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "categories", "{{category_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "X-API-Key", "value": "{{api_key}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Jajan Malam\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories/{{category_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "categories", "{{category_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "X-API-Key", "value": "{{api_key}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories/{{category_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "categories", "{{category_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "Create Transaction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.data && jsonData.data.id) {",
+									"    pm.collectionVariables.set('transaction_id', jsonData.data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "X-API-Key", "value": "{{api_key}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"expense\",\n    \"category_id\": \"{{category_id}}\",\n    \"amount\": 50000,\n    \"description\": \"Makan siang\",\n    \"date\": \"2026-02-11\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "transactions"]
+						}
+					}
+				},
+				{
+					"name": "List Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "X-API-Key", "value": "{{api_key}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions?page=1&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "transactions"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "limit", "value": "20" },
+								{ "key": "type", "value": "", "disabled": true },
+								{ "key": "category_id", "value": "", "disabled": true },
+								{ "key": "status", "value": "", "disabled": true },
+								{ "key": "date_from", "value": "", "disabled": true },
+								{ "key": "date_to", "value": "", "disabled": true }
+							]
+						},
+						"description": "List transactions with optional filters. Enable query params as needed."
+					}
+				},
+				{
+					"name": "List Transactions (Filter by Type)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "X-API-Key", "value": "{{api_key}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions?type=expense&page=1&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "transactions"],
+							"query": [
+								{ "key": "type", "value": "expense" },
+								{ "key": "page", "value": "1" },
+								{ "key": "limit", "value": "20" }
+							]
+						}
+					}
+				},
+				{
+					"name": "List Transactions (Filter by Date Range)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "X-API-Key", "value": "{{api_key}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions?date_from=2026-02-01&date_to=2026-02-28&page=1&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "transactions"],
+							"query": [
+								{ "key": "date_from", "value": "2026-02-01" },
+								{ "key": "date_to", "value": "2026-02-28" },
+								{ "key": "page", "value": "1" },
+								{ "key": "limit", "value": "20" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Transaction by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "X-API-Key", "value": "{{api_key}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions/{{transaction_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "transactions", "{{transaction_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Transaction",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "X-API-Key", "value": "{{api_key}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 75000,\n    \"description\": \"Makan siang + kopi\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions/{{transaction_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "transactions", "{{transaction_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Transaction",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "X-API-Key", "value": "{{api_key}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions/{{transaction_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "transactions", "{{transaction_id}}"]
+						}
+					}
+				}
+			]
+		}
+	]
+}

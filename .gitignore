@@ -1,0 +1,39 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+main
+
+# Go build/test
+*.test
+*.out
+*.prof
+/vendor/
+build/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+__debug_bin*
+
+# Logs
+*.log
+
+# Postman environment files (may contain secrets)
+tests/*.postman_environment.json
